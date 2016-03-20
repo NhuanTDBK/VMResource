@@ -12,8 +12,8 @@ from sklearn import preprocessing
 from sklearn.cross_validation import KFold
 
 vm_name = " 17d13bbf-a55d-4f8e-ad9e-c739e12db98d "
-total_cpu_util = pd.read_hdf("sample_cpu_util")["Volume"]
-total_disk_write = pd.read_hdf("sample_disk_write")["Volume"]
+total_cpu_util = pd.read_json("sample_cpu_util.json")["Volume"]
+total_disk_write = pd.read_json("sample_disk_write.json")["Volume"]
 n_range = total_cpu_util.shape[0]*70/100
 scaler  = preprocessing.MinMaxScaler(feature_range=(0,1))
 
