@@ -4,7 +4,7 @@
 # In[12]:
 
 from __init__ import *
-from FeedFlow import FeedFlow
+#from FeedFlow import FeedFlow
 from SlidingWindowUtil import SlidingWindow
 import matplotlib.pyplot as plt
 from NeuralFlow import NeuralFlowRegressor
@@ -38,9 +38,9 @@ for n_size in np.arange(5,6):
     cpu_util_y = cpu_test_scaler[n_size-1:]
     X_test = np.asarray([np.array(t,dtype=np.float32).flatten().tolist() for t in zip(cpu_util_X,disk_write_X)])
     y_test = np.asarray([np.array(t).flatten().tolist() for t in zip(cpu_util_y,disk_write_y)])
-    for hidden_node in np.arange(10,11):
+    for hidden_node in np.arange(10,20):
         fit_param = {
-            'neural_shape':[2*n_size,hidden_node,2]
+            'neural_shape':[2*n_size,hidden_node,15,2]
         }
         neuralNet = NeuralFlowRegressor()
         kfold = KFold(X_train.shape[0],10)
