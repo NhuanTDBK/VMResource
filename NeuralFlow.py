@@ -25,7 +25,7 @@ class NeuralFlowRegressor(BaseEstimator):
             self.__setattr__(param, value)
         return self
 
-    def __init__(self, uniform_init=True, learning_rate=1E-01, activation=None, optimize="Adagrad", steps=1000,
+    def __init__(self, uniform_init=True, learning_rate=1E-01, activation=None, optimize="Adam", steps=1000,
                  batch_size=100, weights_matrix=None, model_fn=None,verbose=0):
         print "Initialization"
         if (activation == None):
