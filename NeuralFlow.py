@@ -25,8 +25,8 @@ class NeuralFlowRegressor(BaseEstimator):
             self.__setattr__(param, value)
         return self
 
-    def __init__(self, uniform_init=True, learning_rate=1E-01, activation=None, optimize="SGD", steps=1000,
-                 batch_size=100, weights_matrix=None, model_fn=None):
+    def __init__(self, uniform_init=True, learning_rate=1E-01, activation=None, optimize="Adagrad", steps=1000,
+                 batch_size=100, weights_matrix=None, model_fn=None,verbose=0):
         print "Initialization"
         if (activation == None):
             self.activation = tf.nn.relu
@@ -45,6 +45,7 @@ class NeuralFlowRegressor(BaseEstimator):
             self.model_fn = self.model_regression
         self.weights_matrix = None
         self.network = None
+        self.verbose = verbose
     def model_regression(self, X, y):
         input_flow = X
         for hidden_node in self.n_hidden:
@@ -93,7 +94,7 @@ class NeuralFlowRegressor(BaseEstimator):
         self.network = skflow.TensorFlowEstimator(model_fn=self.model_fn, n_classes=0,
                                                   steps=self.steps, learning_rate=self.learning_rate,
                                                   batch_size=self.batch_size,
-                                                  optimizer=self.optimize, config_addon=self.config_addon, verbose=0)
+                                                  optimizer=self.optimize, config_addon=self.config_addon, verbose=self.verbose)
         return self.network.fit(X, y)
 
     def weight_init(self, shape, dtype):
