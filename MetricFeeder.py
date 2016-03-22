@@ -4,8 +4,9 @@ from SlidingWindowUtil import SlidingWindow
 
 
 class MetricFeeder:
-    def __init__(self,split_size=None):
+    def __init__(self,skip_lists=1,split_size=None):
         self.scaler = MinMaxScaler(feature_range=(0, 1))
+        self.skip_lists = skip_lists
         if(split_size!=None):
             self.split_size = split_size
         # self.data = pd.read_hdf(self.metric_type.get(metric_type))["Volume"]
@@ -22,7 +23,7 @@ class MetricFeeder:
         data_fetch_X = []
         data_fetch_y = []
         for metric in metrics:
-            data = pd.read_json(self.metric_type[metric])["Volume"]
+            data = self.average_metric(pd.read_json(self.metric_type[metric])["Volume"],skip_lists=self.skip_lists)
             self.result[metric] = data
             data_fetch_X.append(self.fetch_metric_train(data, n_sliding_window, range_fetch))
             data_fetch_y.append(self.fetch_metric_test(data, n_sliding_window, range_fetch))
@@ -58,3 +59,12 @@ class MetricFeeder:
         min = self.result[type].min()
         max = self.result[type].max()
         return (data_scale - min) / (max - min)
+    def average_metric(self,data,skip_lists):
+        # skip_lists = 5
+        idx = 0
+        avg_cpu = pd.Series(np.zeros(data.shape[0]/skip_lists))
+        for i in np.arange(data.shape[0]/skip_lists):
+            avg_tmp = np.mean(data[idx:idx+skip_lists])
+            avg_cpu[i]=avg_tmp
+            idx += skip_lists
+        return avg_cpu
