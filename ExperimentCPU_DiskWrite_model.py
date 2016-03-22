@@ -22,7 +22,7 @@ params_estimate = {
 }
 result = {}
 
-candidate_param = list(ParameterGrid(param_grid=params_estimate))
+candidate_param = ParameterGrid(param_grid=params_estimate)
 
 def estimator(n_windows,n_hidden_nodes):
 
@@ -46,5 +46,5 @@ def estimator(n_windows,n_hidden_nodes):
 # print neuralNet.score(X_test,y_test)
 # y_pred = neuralNet.predict(X_test)
 # plot_figure(y_pred[:,0],y_test[:,0])
-out = Parallel(n_jobs=-1)(delayed(estimator)(n_window,n_hidden) for n_window, n_hidden in candidate_param)
+out = Parallel(n_jobs=-1)(delayed(estimator)(k["n_windows"],k["hidden_node"]) for k in candidate_param)
 pd.DataFrame.from_dict(result,orient='index').to_json("result_exp_%s"%datetime.datetime.today())
