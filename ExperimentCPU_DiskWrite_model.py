@@ -17,8 +17,8 @@ range_training = (-1,28919)
 range_test = (28919,-1)
 metric_types = ["cpu_util","disk_write_rate"]
 params_estimate = {
-    "n_windows":np.arange(5,6),
-    "hidden_node":np.arange(10,11)
+    "n_windows":np.arange(5,20),
+    "hidden_node":np.arange(10,40)
 }
 result = {}
 candidate_param = ParameterGrid(param_grid=params_estimate)
@@ -26,7 +26,7 @@ dataFeeder = MetricFeeder(split_size=5)
 def get_data(n_windows):
     return (n_windows,dataFeeder.split_train_and_test(metric_types,n_windows))
 print "Getting data"
-tmp = Parallel(n_jobs=1)(delayed(get_data)(n_windows) for n_windows in params_estimate["n_windows"])
+tmp = Parallel(n_jobs=-1)(delayed(get_data)(n_windows) for n_windows in params_estimate["n_windows"])
 data_train = dict((x,y) for x,y in tmp)
 print data_train.keys()
 def estimator(n_windows,n_hidden_nodes):
