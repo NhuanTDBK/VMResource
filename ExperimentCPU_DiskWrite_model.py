@@ -17,20 +17,25 @@ range_training = (-1,28919)
 range_test = (28919,-1)
 metric_types = ["cpu_util","disk_write_rate"]
 params_estimate = {
-    "n_windows":np.arange(5,30),
-    "hidden_node":np.arange(10,60)
+    "n_windows":np.arange(5,6),
+    "hidden_node":np.arange(10,11)
 }
 result = {}
-
 candidate_param = ParameterGrid(param_grid=params_estimate)
-
+dataFeeder = MetricFeeder(split_size=5)
+def get_data(n_windows):
+    return (n_windows,dataFeeder.split_train_and_test(metric_types,n_windows))
+print "Getting data"
+tmp = Parallel(n_jobs=1)(delayed(get_data)(n_windows) for n_windows in params_estimate["n_windows"])
+data_train = dict((x,y) for x,y in tmp)
+print data_train.keys()
 def estimator(n_windows,n_hidden_nodes):
+    data = data_train[n_windows]
+    X_train = data[0]
+    y_train = data[1]
+    X_test = data[2]
+    y_test = data[3]
 
-    dataFeeder = MetricFeeder(split_size=5)
-    X_train,y_train = dataFeeder.fetch(metric_types,n_windows,range_training)
-    X_test,y_test = dataFeeder.fetch(metric_types,n_windows,range_test)
-    #-----------------
-    # hidden_node = 15
     fit_param = {
                 'neural_shape':[2*n_windows,n_hidden_nodes,2]
             }
@@ -47,7 +52,5 @@ def estimator(n_windows,n_hidden_nodes):
 # print neuralNet.score(X_test,y_test)
 # y_pred = neuralNet.predict(X_test)
 # plot_figure(y_pred[:,0],y_test[:,0])
-out = [Parallel(n_jobs=-1)(delayed(estimator)(k["n_windows"],k["hidden_node"]) for k in candidate_param)]
-result_sorted = sorted(out,key=lambda x:x[1])
-print result_sorted[0:10]
-np.savez("result_model_%s"%datetime.datetime.now(),result=result_sorted)
+result = [Parallel(n_jobs=-1)(delayed(estimator)(k["n_windows"],k["hidden_node"]) for k in candidate_param)]
+np.savez("result_model_%s"%datetime.datetime.now(),result=result)
