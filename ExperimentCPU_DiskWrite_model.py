@@ -48,6 +48,6 @@ def estimator(n_windows,n_hidden_nodes):
 # y_pred = neuralNet.predict(X_test)
 # plot_figure(y_pred[:,0],y_test[:,0])
 out = [Parallel(n_jobs=-1)(delayed(estimator)(k["n_windows"],k["hidden_node"]) for k in candidate_param)]
-result_sorted = sorted(result,key=lambda x:x[1])
+result_sorted = sorted(out,key=lambda x:x[1])
 print result_sorted[0:10]
 np.savez("result_model_%s"%datetime.datetime.now(),result=result_sorted)
