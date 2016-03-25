@@ -40,19 +40,21 @@ class MetricFeeder:
         X_test = np.asarray([np.array(t, dtype=np.float32).flatten().tolist() for t in zip(*data_fetch_X)])
         y_test = np.asarray([np.array(t).flatten().tolist() for t in zip(*data_fetch_y)])
         return X_test, y_test
+
     def split_train_and_test(self,metrics=None,n_sliding_window=4,train_size = 0.7):
         length_data = 0
         if metrics == None:
             metrics = self.metric_type.keys()
-        for metric in metrics:
-            self.result[metric]= self.average_metric(pd.read_json(self.metric_type[metric])["Volume"],skip_lists=self.skip_lists)
-            length_data = self.result[metric].shape[0]
+            for metric in metrics:
+                self.result[metric]= self.average_metric(pd.read_json(self.metric_type[metric])["Volume"],skip_lists=self.skip_lists)
+                length_data = self.result[metric].shape[0]
         point = int(length_data*train_size)
         range_train = (-1,point)
         range_test = (point,-1)
-        X_train,y_train = self._fetch(n_sliding_window,range_train)
-        X_test,y_test = self._fetch(n_sliding_window,range_test)
-        return X_train,y_train,X_test,y_test
+        X_train, y_train = self._fetch(n_sliding_window,range_train)
+        X_test, y_test = self._fetch(n_sliding_window,range_test)
+        return X_train, y_train,  X_test,   y_test
+
     def fetch_metric_train(self, data, n_sliding_window, range_fetch):
         from_range = range_fetch[0]
         to_range = range_fetch[1]

@@ -15,7 +15,7 @@ range_test = (28919,-1)
 dataFeeder = MetricFeeder()
 X_train,y_train, X_test,y_test = dataFeeder.split_train_and_test(n_sliding_window=n_windows)
 
-neural_shape = [n_windows*len(dataFeeder.metric_type),n_hidden,2]
+neural_shape = [n_windows*len(dataFeeder.metric_type),n_hidden,len(dataFeeder.metric_type)]
 estimator = ACOEstimator()
 archive_solution = construct_solution(estimator.number_of_solutions,neural_shape)
 fit_param = {'neural_shape':neural_shape,"archive":archive_solution}

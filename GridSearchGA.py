@@ -15,11 +15,11 @@ range_test = (28919,-1)
 dataFeeder = MetricFeeder()
 X_train,y_train,X_test,y_test = dataFeeder.split_train_and_test(n_sliding_window=n_windows)
 
-neural_shape = [n_windows*len(dataFeeder.metric_type),n_hidden,2]
+neural_shape = [n_windows*len(dataFeeder.metric_type),n_hidden,len(dataFeeder.metric_type)]
 estimator = GAEstimator()
 fit_param = {'neural_shape':neural_shape}
 # estimator.fit(X,y,**fit_param)
-gs = GridSearchCV(estimator,param_grid=param_dicts,n_jobs=-1,fit_params=fit_param,scoring='mean_squared_error')
+gs = GridSearchCV(estimator,param_grid=param_dicts,n_jobs=1,fit_params=fit_param,scoring='mean_squared_error')
 gs.fit(X_train,y_train)
 print gs.best_estimator_
 print gs.best_estimator_.score(X_test,y_test)
