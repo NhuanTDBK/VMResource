@@ -10,28 +10,15 @@ from sklearn.cluster import KMeans
 from sklearn.datasets import make_blobs
 import pandas as pd
 from pandas import HDFStore
-
+from MetricFeeder import MetricFeeder
 from scipy import signal
 
 
-# In[7]:
-
-# store = HDFStore("storeTraffic.h5")
-# store
-
-
-# In[8]:
-
-# workload = np.array(store["raw_conn_train"])
-# print(workload.shape)
-
-
 # In[9]:
-
-raw_data = pd.read_csv("10min_workload.csv")
+dataFeeder = MetricFeeder(split_size=10)
+raw_data = pd.read_json("sample_cpu_util.json")
 n_row = raw_data.shape[0]
-workload = np.asarray([raw_data.ix[i][0]  for i in range(1,n_row)])
-workload = workload [144*2:144*7]
+workload = dataFeeder.average_metric(raw_data["Volume"])
 
 
 # In[10]:

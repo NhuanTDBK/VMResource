@@ -40,8 +40,10 @@ class MetricFeeder:
         X_test = np.asarray([np.array(t, dtype=np.float32).flatten().tolist() for t in zip(*data_fetch_X)])
         y_test = np.asarray([np.array(t).flatten().tolist() for t in zip(*data_fetch_y)])
         return X_test, y_test
-    def split_train_and_test(self,metrics,n_sliding_window,train_size = 0.7):
+    def split_train_and_test(self,metrics=None,n_sliding_window=4,train_size = 0.7):
         length_data = 0
+        if metrics == None:
+            metrics = self.metric_type.keys()
         for metric in metrics:
             self.result[metric]= self.average_metric(pd.read_json(self.metric_type[metric])["Volume"],skip_lists=self.skip_lists)
             length_data = self.result[metric].shape[0]
@@ -78,10 +80,12 @@ class MetricFeeder:
     def convert(self, data_scale, type="cpu_util"):
         min = self.result[type].min()
         max = self.result[type].max()
-        return (data_scale - min) / (max - min)
-    def average_metric(self,data,skip_lists):
+        return data_scale * (max - min) + min
+    def average_metric(self,data,skip_lists=None):
         # skip_lists = 5
         idx = 0
+        if(skip_lists==None):
+            skip_lists = self.skip_lists
         avg_cpu = pd.Series(np.zeros(data.shape[0]/skip_lists))
         for i in np.arange(data.shape[0]/skip_lists):
             avg_tmp = np.mean(data[idx:idx+skip_lists])

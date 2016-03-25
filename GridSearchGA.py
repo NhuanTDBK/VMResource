@@ -7,13 +7,15 @@ param_dicts = {
     "pop_size":[45,50,60],
     "mutation_rate":np.arange(0.01,0.05,step=0.01)
 }
-n_sliding_window = 13
-n_periodic = 1
-n_input = n_sliding_window + n_periodic
-neural_shape=[2*n_input,15 ,1]
-metric_types = ["cpu_util","disk_write_rate"]
-dataFeeder = MetricFeeder(split_size=5)
-X_train,y_train,X_test,y_test = dataFeeder.split_train_and_test(metrics=metric_types,n_sliding_window=n_sliding_window)
+n_windows = 4
+n_hidden = 10
+range_training = (-1,28919)
+range_test = (28919,-1)
+# metric_types = ["cpu_util","disk_write_rate","disk_read_rate","network_"]
+dataFeeder = MetricFeeder()
+X_train,y_train,X_test,y_test = dataFeeder.split_train_and_test(n_sliding_window=n_windows)
+
+neural_shape = [n_windows*len(dataFeeder.metric_type),n_hidden,2]
 estimator = GAEstimator()
 fit_param = {'neural_shape':neural_shape}
 # estimator.fit(X,y,**fit_param)

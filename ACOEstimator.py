@@ -35,11 +35,9 @@ class ACOEstimator(BaseEstimator):
             self.__setattr__(param,value)
         return self
     def optimize(self,X=None,y=None):
-        if(X!=None):
-            self.X = X
-        if(y!=None):
-            self.y = y
-        if(self.archive==None):
+        self.X = X
+        self.y = y
+        if self.archive == None:
             self.archive = construct_solution(self.number_of_solutions,self.neural_shape)
         self.sorted_archive = self.calculate_fitness(self.score_fn,self.archive)
         weights = self.calculate_weights(self.archive.shape)
@@ -51,7 +49,7 @@ class ACOEstimator(BaseEstimator):
             if(self.sorted_archive==None):
                 return self.archive[0]
             # best_error = summary_writter[-1]
-            weights = self.calculate_weights(self.archive.shape)
+            # weights = self.calculate_weights(self.archive.shape)
             self.archive = self.sampling_more(self.sorted_archive,weights,self.epsilon)
             self.sorted_archive = self.calculate_fitness(self.score_fn,self.archive)
             # except Exception as e:
@@ -59,16 +57,19 @@ class ACOEstimator(BaseEstimator):
             #     break
         print "Found best loss %f"%self.best_loss
         return self.best_archive
-    def fit(self,X,y,**param):
+
+    def fit(self, X, y,**param):
+
         self.X = X
         self.y = y
         self.neural_shape = param.get('neural_shape')
         self.archive = param.get("archive")
-        if(param.has_key("top_k")):
+        if param.has_key("top_k"):
             self.top_k = param.get("top_k")
         self.score_fn = FeedFlow(self.neural_shape)
         self.score_fn.set_weights(self.optimize(X,y))
         return self
+
     def predict(self,X):
         return self.score_fn.flow(X)
     def score(self,X,y):
@@ -88,7 +89,7 @@ class ACOEstimator(BaseEstimator):
         sorted_archive = np.zeros(archive.shape)
         for (index,item) in enumerate(sorted_idx):
             sorted_archive[item] = archive[index]
-        if(min_score < self.best_loss):
+        if min_score < self.best_loss :
             self.best_loss = min_score
             self.best_archive = sorted_archive[0]
         return sorted_archive
@@ -102,7 +103,7 @@ class ACOEstimator(BaseEstimator):
             exponent = np.square(index-1) / (2*np.square(self.Q*shape[0]))
             weights[index] = np.multiply(co_efficient,np.exp(-exponent))
         return weights
-    # In[103]:
+
     def compute_standard_deviation(self,i,l,archive,epsilon):
         __doc__ = " compute standard deviation with i, l, archive and epsilon"
         #Constant sd
@@ -113,24 +114,27 @@ class ACOEstimator(BaseEstimator):
         return np.multiply(sum_dev,epsilon)
     # In[104]:
 
-    def choose_pdf(self,archive_shape,weights):
+    def choose_pdf(self, archive_shape, weights):
         sum_weights = np.sum(weights)
         temp = 0
         l = 0
-        pro_r = np.random.uniform(0.0,1.0)
+        pro_r = np.random.uniform(0.0, 1.0)
         for (index,weight) in enumerate(weights):
             temp = temp + weight/sum_weights
             if(temp > pro_r):
                 l = index
         return l
-    def sampling_more(self,archive,weights,epsilon):
-        pdf = 0
+
+    def sampling_more(self, archive, weights, epsilon):
+        # pdf = 0
+        len_of_weights = range(archive.shape[1])
         next_archive = np.zeros(archive.shape)
         for index in np.arange(archive.shape[0]):
             i_pdf = self.choose_pdf(archive.shape,weights)
-            for item in np.arange(archive.shape[1]):
-                sigma = self.compute_standard_deviation(item,i_pdf,archive,epsilon)
-                mu = archive[pdf][item]
-    #             print sigma,mu
-                next_archive[index][item] = np.random.normal(mu,sigma)
+    #         for item in np.arange(archive.shape[1]):
+    #             sigma = self.compute_standard_deviation(item,i_pdf,archive,epsilon)
+    #             mu = archive[pdf][item]
+    # #             print sigma,mu
+    #             next_archive[index][item] = np.random.normal(mu,sigma)
+            next_archive[index] = [np.random.normal(archive[index,item],self.compute_standard_deviation(item,i_pdf,archive,epsilon)) for item in len_of_weights]
         return next_archive

@@ -14,7 +14,7 @@ class GAEstimator(BaseEstimator):
         # self.fan_in = n_input
         # self.fan_out = 15
         # self.theta_shape = (self.n_input,1)
-        self.gen_size = gen_size
+        self.gen_size = self.number_of_solutions = gen_size
         self.pop_size = pop_size
         self.cross_rate = cross_rate
         self.mutation_rate = mutation_rate

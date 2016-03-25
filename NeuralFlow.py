@@ -3,7 +3,7 @@ import skflow
 import tensorflow as tf
 from sklearn.base import BaseEstimator
 from sklearn.metrics import mean_squared_error
-
+from sklearn.cross_validation import KFold
 from initializer import *
 
 
@@ -66,7 +66,7 @@ class NeuralFlowRegressor(BaseEstimator):
     def fit(self, X, y, **param):
         self.neural_shape = param.get("neural_shape")
         self.weights_matrix = param.get('weights_matrix')
-
+        self.kFold = KFold(X.shape[0],n_folds=10)
         self.n_output = self.neural_shape[-1]
 
         self.n_hidden = self.neural_shape[1:-1]
@@ -94,8 +94,10 @@ class NeuralFlowRegressor(BaseEstimator):
         self.network = skflow.TensorFlowEstimator(model_fn=self.model_fn, n_classes=0,
                                                   steps=self.steps, learning_rate=self.learning_rate,
                                                   batch_size=self.batch_size,
-                                                  optimizer=self.optimize, config_addon=self.config_addon, verbose=self.verbose)
-        return self.network.fit(X, y)
+                                                  optimizer=self.optimize, config_addon=self.config_addon, verbose=self.verbose,continue_training=True)
+        for train,test in self.kFold:
+            self.network.fit(X[train],y[train])
+        return self
 
     def weight_init(self, shape, dtype):
         W = self.W_iter.next()
