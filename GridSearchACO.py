@@ -9,8 +9,8 @@ param_dicts = {
 }
 n_windows = 4
 n_hidden = 10
-range_training = (-1,28919)
-range_test = (28919,-1)
+# range_training = (-1,28919)
+# range_test = (28919,-1)
 # metric_types = ["cpu_util","disk_write_rate","disk_read_rate","network_"]
 dataFeeder = MetricFeeder()
 X_train,y_train, X_test,y_test = dataFeeder.split_train_and_test(n_sliding_window=n_windows)

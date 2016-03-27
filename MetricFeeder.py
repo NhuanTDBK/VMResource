@@ -42,18 +42,22 @@ class MetricFeeder:
         return X_test, y_test
 
     def split_train_and_test(self,metrics=None,n_sliding_window=4,train_size = 0.7):
-        length_data = 0
-        if metrics == None:
-            metrics = self.metric_type.keys()
-            for metric in metrics:
-                self.result[metric]= self.average_metric(pd.read_json(self.metric_type[metric])["Volume"],skip_lists=self.skip_lists)
-                length_data = self.result[metric].shape[0]
-        point = int(length_data*train_size)
-        range_train = (-1,point)
-        range_test = (point,-1)
-        X_train, y_train = self._fetch(n_sliding_window,range_train)
-        X_test, y_test = self._fetch(n_sliding_window,range_test)
-        return X_train, y_train,  X_test,   y_test
+        if(np.load("train_test.npz").files and n_sliding_window==10):
+            file_data = np.load("train_test.npz")
+            return file_data["X_train"],file_data["y_train"],file_data["X_test"],file_data["y_test"]
+        else:
+            length_data = 0
+            if metrics == None:
+                metrics = self.metric_type.keys()
+                for metric in metrics:
+                    self.result[metric]= self.average_metric(pd.read_json(self.metric_type[metric])["Volume"],skip_lists=self.skip_lists)
+                    length_data = self.result[metric].shape[0]
+            point = int(length_data*train_size)
+            range_train = (-1,point)
+            range_test = (point,-1)
+            X_train, y_train = self._fetch(n_sliding_window,range_train)
+            X_test, y_test = self._fetch(n_sliding_window,range_test)
+            return X_train, y_train,  X_test, y_test
 
     def fetch_metric_train(self, data, n_sliding_window, range_fetch):
         from_range = range_fetch[0]
@@ -85,12 +89,8 @@ class MetricFeeder:
         return data_scale * (max - min) + min
     def average_metric(self,data,skip_lists=None):
         # skip_lists = 5
-        idx = 0
+        # idx = 0
         if(skip_lists==None):
             skip_lists = self.skip_lists
-        avg_cpu = pd.Series(np.zeros(data.shape[0]/skip_lists))
-        for i in np.arange(data.shape[0]/skip_lists):
-            avg_tmp = np.mean(data[idx:idx+skip_lists])
-            avg_cpu[i]=avg_tmp
-            idx += skip_lists
-        return avg_cpu
+        # avg_cpu = pd.Series(np.zeros(data.shape[0]/skip_lists))
+        return pd.Series([data[idx] for idx in np.arange(0,data.shape[0],step=skip_lists)])
