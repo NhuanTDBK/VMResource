@@ -9,7 +9,7 @@ def get_params():
     return out
 def put_queue(n_input,dataFeeder):
     X_train,y_train,X_test,y_test  = dataFeeder.split_train_and_test(n_sliding_window=n_input)
-    retrieve = [n_input+1,(X_train,y_train,X_test,y_test)]
+    retrieve = [n_input,(X_train,y_train,X_test,y_test)]
     return retrieve
 def model_fit(param):
     print "Training %s"%param[0]
