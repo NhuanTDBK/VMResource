@@ -1,20 +1,19 @@
 import numpy as np
-from TrafficFeeder import TrafficFeeder
+from MetricFeeder import MetricFeeder
 from NeuralFlow import NeuralFlowRegressor
 from joblib import Parallel,delayed
 def get_params():
-    dataFeeder = TrafficFeeder()
+    dataFeeder = MetricFeeder()
     out = Parallel(n_jobs=-1)(delayed(put_queue)
                         (n_input,dataFeeder) for n_input in range(4,21))
     return out
 def put_queue(n_input,dataFeeder):
-    X_train,y_train = dataFeeder.fetch_traffic_training(n_input,1,(40,46))
-    X_test,y_test = dataFeeder.fetch_traffic_training(n_input,1,(46,48))
+    X_train,y_train,X_test,y_test  = dataFeeder.split_train_and_test(n_sliding_window=n_input)
     retrieve = [n_input+1,(X_train,y_train,X_test,y_test)]
     return retrieve
 def model_fit(param):
     print "Training %s"%param[0]
-    neural_shape = [param[0],15,1]
+    neural_shape = [5*param[0],15,5]
     X_train = param[1][0]
     y_train = param[1][1]
     X_test = param[1][2]
