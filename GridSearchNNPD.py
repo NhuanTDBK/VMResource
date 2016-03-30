@@ -1,7 +1,7 @@
 import numpy as np
 from MetricFeeder import MetricFeeder
 from NeuralFlow import NeuralFlowRegressor
-from joblib import Parallel,delayed
+from sklearn.grid_search import Parallel,delayed
 def get_params():
     dataFeeder = MetricFeeder()
     out = Parallel(n_jobs=-1)(delayed(put_queue)

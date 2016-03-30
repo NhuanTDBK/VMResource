@@ -42,7 +42,7 @@ class MetricFeeder:
         return X_test, y_test
 
     def split_train_and_test(self,metrics=None,n_sliding_window=4,train_size = 0.7):
-        if(n_sliding_window==100):
+        if(n_sliding_window==4):
             file_data = np.load("train_test.npz")
             return file_data["X_train"],file_data["y_train"],file_data["X_test"],file_data["y_test"]
         else:
