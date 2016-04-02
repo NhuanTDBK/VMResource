@@ -1,10 +1,10 @@
-from GraphUtil import *
-from MetricFeeder import *
 from ACOEstimator import ACOEstimator
-from initializer import *
 from NeuralFlow import NeuralFlowRegressor
-from OptimizerNNEstimator import OptimizerNNEstimator
-from sklearn.metrics import mean_squared_error
+
+from estimators.OptimizerNNEstimator import OptimizerNNEstimator
+from io.MetricFeeder import *
+from utils.GraphUtil import *
+from utils.initializer import *
 
 n_windows = 4
 n_hidden = 15

@@ -1,7 +1,9 @@
 from sklearn.grid_search import GridSearchCV
-from initializer import *
-from MetricFeeder import MetricFeeder
-from ACOEstimator import ACOEstimator
+
+from estimators.ACOEstimator import ACOEstimator
+from io_utils.GFeeder import GFeeder
+from utils.initializer import *
+
 param_dicts = {
     "Q":np.arange(0.01,0.1,step=0.01),
     "epsilon":np.arange(0.1,1.0,step=0.05),
@@ -12,7 +14,7 @@ n_hidden = 10
 # range_training = (-1,28919)
 # range_test = (28919,-1)
 # metric_types = ["cpu_util","disk_write_rate","disk_read_rate","network_"]
-dataFeeder = MetricFeeder()
+dataFeeder = GFeeder()
 X_train,y_train, X_test,y_test = dataFeeder.split_train_and_test(n_sliding_window=n_windows)
 
 neural_shape = [n_windows*len(dataFeeder.metric_type),n_hidden,len(dataFeeder.metric_type)]

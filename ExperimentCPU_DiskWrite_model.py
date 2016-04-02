@@ -3,15 +3,15 @@
 
 # In[12]:
 
-from __init__ import *
-import matplotlib.pyplot as plt
-from NeuralFlow import NeuralFlowRegressor
-from sklearn.cross_validation import KFold
 import datetime
-from MetricFeeder import MetricFeeder
-from GraphUtil import *
-from sklearn.grid_search import ParameterGrid,Parallel,delayed
+
 import numpy as np
+from sklearn.cross_validation import KFold
+from sklearn.grid_search import ParameterGrid,Parallel,delayed
+
+from estimators.NeuralFlow import NeuralFlowRegressor
+from io.MetricFeeder import MetricFeeder
+
 #----------------
 range_training = (-1,28919)
 range_test = (28919,-1)

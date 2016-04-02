@@ -1,9 +1,9 @@
 import numpy as np
-from MetricFeeder import MetricFeeder
-from NeuralFlow import NeuralFlowRegressor
 from sklearn.grid_search import Parallel,delayed
+from estimators.NeuralFlow import NeuralFlowRegressor
+from io_utils.GFeeder import GFeeder
 def get_params():
-    dataFeeder = MetricFeeder()
+    dataFeeder = GFeeder()
     out = Parallel(n_jobs=-1)(delayed(put_queue)
                         (n_input,dataFeeder) for n_input in range(4,21))
     return out
@@ -13,11 +13,12 @@ def put_queue(n_input,dataFeeder):
     return retrieve
 def model_fit(param):
     print "Training %s"%param[0]
-    neural_shape = [5*param[0],15,5]
     X_train = param[1][0]
     y_train = param[1][1]
     X_test = param[1][2]
     y_test = param[1][3]
+
+    neural_shape = [y_train.shape[1]*param[0],10,y_train.shape[1]]
     fit_param = {
         "neural_shape":neural_shape
     }

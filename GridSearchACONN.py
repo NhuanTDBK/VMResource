@@ -1,9 +1,12 @@
 import numpy as np
-from ACOEstimator import ACOEstimator
-from NeuralFlow import NeuralFlowRegressor
+from estimators.NeuralFlow import NeuralFlowRegressor
 from joblib import Parallel,delayed
+from io_utils.GFeeder import GFeeder
+from estimators.ACOEstimator import ACOEstimator
+
+
 def get_params():
-    dataFeeder = TrafficFeeder()
+    dataFeeder = GFeeder()
     out = Parallel(n_jobs=-1)(delayed(put_queue)
                         (n_input,dataFeeder) for n_input in range(4,21))
     return out
@@ -14,11 +17,11 @@ def put_queue(n_input,dataFeeder):
     return retrieve
 def model_fit(param):
     print "Training %s"%param[0]
-    neural_shape = [param[0],15,1]
     X_train = param[1][0]
     y_train = param[1][1]
     X_test = param[1][2]
     y_test = param[1][3]
+    neural_shape = [y_train.shape[1]*param[0],10,y_train.shape[1]]
     acoNet = ACOEstimator(Q=0.08,epsilon=0.55)
     fit_param = {
         "neural_shape":neural_shape

@@ -1,10 +1,13 @@
 import numpy as np
-from TrafficFeeder import TrafficFeeder
-from GAEstimator import GAEstimator
-from NeuralFlow import NeuralFlowRegressor
+from estimators.NeuralFlow import NeuralFlowRegressor
+from io_utils.GFeeder import GFeeder
 from joblib import Parallel,delayed
+
+from estimators.GAEstimator import GAEstimator
+
+
 def get_params():
-    dataFeeder = TrafficFeeder()
+    dataFeeder = GFeeder()
     out = Parallel(n_jobs=-1)(delayed(put_queue)
                         (n_input,dataFeeder) for n_input in range(4,21))
     return out
@@ -15,11 +18,11 @@ def put_queue(n_input,dataFeeder):
     return retrieve
 def model_fit(param):
     print "Training %s"%param[0]
-    neural_shape = [param[0],15,1]
     X_train = param[1][0]
     y_train = param[1][1]
     X_test = param[1][2]
     y_test = param[1][3]
+    neural_shape = [y_train.shape[1]*param[0],10,y_train.shape[1]]
     acoNet = GAEstimator(cross_rate=0.65,mutation_rate=0.01,pop_size=50)
     fit_param = {
         "neural_shape":neural_shape

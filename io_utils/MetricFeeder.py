@@ -1,8 +1,6 @@
 from __init__ import *
 from sklearn.preprocessing import MinMaxScaler
-from SlidingWindowUtil import SlidingWindow
-
-
+from utils.SlidingWindowUtil import SlidingWindow
 class MetricFeeder:
     def __init__(self,skip_lists=1,split_size=None):
         self.scaler = MinMaxScaler(feature_range=(0, 1))
@@ -12,11 +10,11 @@ class MetricFeeder:
         # self.data = pd.read_hdf(self.metric_type.get(metric_type))["Volume"]
         self.result = {}
         self.metric_type = {
-            "cpu_util": "sample_cpu_util.json",
-            "disk_write_rate": "sample_disk_write.json",
-            "disk_read_rate": "sample_disk_read.json",
-            "network_incoming_rate": "sample_network_incoming.json",
-            "network_outgoing_rate": "sample_network_outgoing.json"
+            "cpu_util": "../data/vdc/sample_cpu_util.json",
+            "disk_write_rate": "../data/vdc/sample_disk_write.json",
+            "disk_read_rate": "../data/vdc/sample_disk_read.json",
+            "network_incoming_rate": "../data/vdc/sample_network_incoming.json",
+            "network_outgoing_rate": "../data/vdc/sample_network_outgoing.json"
         }
 
     def fetch(self, metrics, n_sliding_window, range_fetch=None):
@@ -42,22 +40,18 @@ class MetricFeeder:
         return X_test, y_test
 
     def split_train_and_test(self,metrics=None,n_sliding_window=4,train_size = 0.7):
-        if(n_sliding_window==4):
-            file_data = np.load("train_test.npz")
-            return file_data["X_train"],file_data["y_train"],file_data["X_test"],file_data["y_test"]
-        else:
-            length_data = 0
-            if metrics == None:
-                metrics = self.metric_type.keys()
-                for metric in metrics:
-                    self.result[metric]= self.average_metric(pd.read_json(self.metric_type[metric])["Volume"],skip_lists=self.skip_lists)
-                    length_data = self.result[metric].shape[0]
-            point = int(length_data*train_size)
-            range_train = (-1,point)
-            range_test = (point,-1)
-            X_train, y_train = self._fetch(n_sliding_window,range_train)
-            X_test, y_test = self._fetch(n_sliding_window,range_test)
-            return X_train, y_train,  X_test, y_test
+        length_data = 0
+        if metrics == None:
+            metrics = self.metric_type.keys()
+            for metric in metrics:
+                self.result[metric]= self.average_metric(pd.read_json(self.metric_type[metric])["Volume"],skip_lists=self.skip_lists)
+                length_data = self.result[metric].shape[0]
+        point = int(length_data*train_size)
+        range_train = (-1,point)
+        range_test = (point,-1)
+        X_train, y_train = self._fetch(n_sliding_window,range_train)
+        X_test, y_test = self._fetch(n_sliding_window,range_test)
+        return X_train, y_train,  X_test, y_test
 
     def fetch_metric_train(self, data, n_sliding_window, range_fetch):
         from_range = range_fetch[0]

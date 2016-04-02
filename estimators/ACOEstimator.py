@@ -1,8 +1,9 @@
-from initializer import *
-import logging
 from sklearn.base import BaseEstimator
+
 from FeedFlow import FeedFlow
-logging.basicConfig(level=logging.DEBUG,format='')
+from utils.initializer import *
+
+
 # In[150]:
 class ACOEstimator(BaseEstimator):
     def __init__(self,neural_shape=None,number_of_weights=None,number_of_solutions=100,max_epochs = 100,error_criteria = 0.9,

@@ -3,16 +3,13 @@
 
 # In[1]:
 
-import numpy as np
-import matplotlib.pyplot as plt
-
-from sklearn.cluster import KMeans
-from sklearn.datasets import make_blobs
-import pandas as pd
-from pandas import HDFStore
-from MetricFeeder import MetricFeeder
 from scipy import signal
 
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+
+from io_utils.MetricFeeder import MetricFeeder
 
 # In[9]:
 dataFeeder = MetricFeeder(split_size=10)

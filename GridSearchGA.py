@@ -1,7 +1,8 @@
 from sklearn.grid_search import GridSearchCV
-from initializer import *
-from MetricFeeder import MetricFeeder
-from GAEstimator import GAEstimator
+from estimators.GAEstimator import GAEstimator
+from io_utils.GFeeder import GFeeder
+from utils.initializer import *
+
 param_dicts = {
     "cross_rate":[0.6,0.65,0.7,0.8,0.9],
     "pop_size":[45,50,60],
@@ -9,10 +10,8 @@ param_dicts = {
 }
 n_windows = 4
 n_hidden = 10
-range_training = (-1,28919)
-range_test = (28919,-1)
 # metric_types = ["cpu_util","disk_write_rate","disk_read_rate","network_"]
-dataFeeder = MetricFeeder()
+dataFeeder = GFeeder()
 X_train,y_train,X_test,y_test = dataFeeder.split_train_and_test(n_sliding_window=n_windows)
 
 neural_shape = [n_windows*len(dataFeeder.metric_type),n_hidden,len(dataFeeder.metric_type)]

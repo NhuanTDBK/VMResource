@@ -2,9 +2,10 @@ import matplotlib.pyplot as plt
 import skflow
 import tensorflow as tf
 from sklearn.base import BaseEstimator
-from sklearn.metrics import mean_squared_error
 from sklearn.cross_validation import KFold
-from initializer import *
+from sklearn.metrics import mean_squared_error
+
+from utils.initializer import *
 
 
 class NeuralFlowRegressor(BaseEstimator):

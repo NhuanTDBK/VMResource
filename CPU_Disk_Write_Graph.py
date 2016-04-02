@@ -1,8 +1,8 @@
-import matplotlib.pyplot as plt
-from __init__ import *
 import skflow
 from sklearn import preprocessing
-from SlidingWindowUtil import *
+
+from __init__ import *
+from utils.SlidingWindowUtil import *
 
 result = pd.read_json("result_exp1")
 neural_network = skflow.TensorFlowEstimator.restore("score_0.000155509367764/")
