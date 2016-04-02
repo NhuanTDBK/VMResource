@@ -16,16 +16,14 @@ import os
 client = MongoClient()
 db = client.gcluster
 collection = db.task_usage
-index_task = IndexModel([("mID", ASCENDING),("stime",ASCENDING),("etime",ASCENDING)],name="helloworld")
-collection.create_indexes([index_task])
+#index_task = IndexModel([("mID", ASCENDING),("stime",ASCENDING),("etime",ASCENDING)],name="helloworld")
+#collection.create_indexes([index_task])
 schema = pd.read_csv("schema_tu.csv").columns
 
 for data in os.listdir('data'):
     print data
-    reader = pd.read_csv("data/%s"%data,names=schema,chunksize=10000,iterator=True)
-    for chunk in reader:
-        print "Insert documents"
-        collection.insert_many(chunk.to_dict('records'))
+    reader = pd.read_csv("data/%s"%data,names=schema)
+    collection.insert_many(reader.to_dict('records'))
 #     print len(chunk.columns)
 
 
