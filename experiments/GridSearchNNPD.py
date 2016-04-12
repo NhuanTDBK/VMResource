@@ -51,6 +51,6 @@ for n_hidden in np.arange(2000,4000,step=10):
 # y_pred = optimizer.predict(X_test)
 # plot_metric_figure(y_pred=y_pred,y_test=y_test, metric_type=dataFeeder.metrics,title="GANN")
 # plot_metric_figure(y_pred=y_pred,y_test=y_test,metric_type=metrics_types,title=" GANN ")
-# optimizer.save("params/model_full_metric_%s"%score)
+#optimizer.save("params/model_full_metric_%s"%score)
 score_list = pd.Series(score_list)
 print "Optimal hidden nodes: %s, with score = %s"%(score_list.argmin(),score_list.min())
