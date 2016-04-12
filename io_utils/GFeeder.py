@@ -1,7 +1,7 @@
 from utils.SlidingWindowUtil import SlidingWindow
 from __init__ import *
 class GFeeder:
-    def __init__(self,skip_lists=1,split_size=None,file_name="../data/gdata/gcluster_normalize.json"):
+    def __init__(self,skip_lists=1,split_size=None,file_name="data/gdata/gcluster_normalize.json"):
         self.skip_lists = skip_lists
         if(split_size!=None):
             self.split_size = split_size
