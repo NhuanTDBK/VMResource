@@ -1,19 +1,24 @@
 from utils.SlidingWindowUtil import SlidingWindow
 from __init__ import *
 class GFeeder:
-    def __init__(self,skip_lists=1,split_size=None):
+    def __init__(self,skip_lists=1,split_size=None,file_name="../data/gdata/gcluster_normalize.json"):
         self.skip_lists = skip_lists
         if(split_size!=None):
             self.split_size = split_size
         self.result = {}
+        self.CPU_UTIL = 'cpu_usage'
+        self.DISK_IO_TIME = 'disk_io_time'
+        self.DISK_SPACE = 'disk_space'
+        self.MEM_USAGE = 'mem_usage'
         self.metric_type = [
-            u'cpu_usage', u'disk_io_time', u'disk_space', u'mem_usage',
+            self.CPU_UTIL, self.MEM_USAGE, self.DISK_IO_TIME,self.DISK_SPACE
         ]
-        self.file_name = "data/gdata/gcluster_1268205_1min.json"
+        self.metrics = self.metric_type
+        self.file_name = file_name
     def read(self,metrics=None):
-        if (metrics==None):
-            metrics = self.metric_type
-        return pd.read_json(self.file_name)[metrics][:1152614]
+        if (metrics!=None):
+            self.metrics = metrics
+        return self._skip_windows(pd.read_json(self.file_name)[self.metrics][:1152614])
     def fetch_metric_train(self,data,n_sliding_window,range_fetch):
         from_range = range_fetch[0]
         to_range = range_fetch[1]
@@ -38,12 +43,21 @@ class GFeeder:
         data_fetch_X = []
         data_fetch_y = []
         for column,data in self.result.iteritems():
-            # data = self.average_metric(data,skip_lists=self.skip_lists)
             data_fetch_X.append(self.fetch_metric_train(data, n_sliding_window,range_fetch))
             data_fetch_y.append(self.fetch_metric_test(data, n_sliding_window,range_fetch))
         X_test = np.asarray([np.array(t, dtype=np.float32).flatten().tolist() for t in zip(*data_fetch_X)])
         y_test = np.asarray([np.array(t).flatten().tolist() for t in zip(*data_fetch_y)])
         return X_test, y_test
+    def _fetch_metric_window(self,metrics_windows,range_fetch=None):
+        data_fetch_X = []
+        data_fetch_y = []
+        for column,data in self.result.iteritems():
+            data_fetch_X.append(self.fetch_metric_train(data, metrics_windows[column],range_fetch))
+            data_fetch_y.append(self.fetch_metric_test(data, metrics_windows[column],range_fetch))
+        X_test = np.asarray(self._concat(zip(*data_fetch_X)))
+        y_test = np.asarray(self._concat(zip(*data_fetch_y)))
+        return X_test, y_test
+        # return data_fetch_X,data_fetch_y
     def split_train_and_test(self,metrics=None,n_sliding_window=4,train_size = 0.7):
         self.result = self.read(metrics)
         length_data = self.result.shape[0]
@@ -52,4 +66,30 @@ class GFeeder:
         range_test = (point,-1)
         X_train, y_train = self._fetch(n_sliding_window,range_train)
         X_test, y_test = self._fetch(n_sliding_window,range_test)
+        self.input_size = len(metrics)*n_sliding_window
+        self.output_size = len(metrics)
         return X_train, y_train,  X_test, y_test
+    def _skip_windows(self,data):
+        new_indices = np.arange(data.shape[0],step=self.skip_lists)
+        return pd.DataFrame(data.iloc[idx] for idx in new_indices)
+    def split_train_and_test_window(self,metrics_windows=None,train_size = 0.7):
+        self.result = self.read(metrics=metrics_windows.keys())
+        length_data = self.result.shape[0]
+        point = int(length_data*train_size)
+        range_train = (-1,point)
+        range_test = (point,-1)
+        # return self._fetch_metric_window(metrics_windows,range_train)
+        X_train, y_train = self._fetch_metric_window(metrics_windows,range_train)
+        X_test, y_test = self._fetch_metric_window(metrics_windows,range_test)
+        self.input_size = sum(metrics_windows.values())
+        self.output_size = len(metrics_windows)
+        return X_train, y_train,  X_test, y_test
+    def _concat(self,zip_array):
+        big_one = []
+        for arr in zip_array:
+            tmp = arr[0].tolist()
+            for after in arr[1:]:
+                for t in after:
+                    tmp.append(t)
+            big_one.append(tmp)
+        return big_one

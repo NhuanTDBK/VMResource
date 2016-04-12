@@ -10,7 +10,7 @@ def plot_figure(y_pred=None,y_true=None,color=['blue','red'],title=None):
     ax.set_title(title)
     plt.show()
     return None
-def plot_metric_figure(y_pred,y_test,metric_type,title=None):
+def plot_metric_figure(y_pred=None,y_test=None,metric_type=None,title=None):
     for k, metric in enumerate(metric_type):
         plot_figure(y_pred[:,k],y_test[:,k],title="%s based on %s Prediction - score %s"
                                                   %(metric,title,mean_squared_error(y_pred[:, k], y_test[:, k])))

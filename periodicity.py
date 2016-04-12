@@ -9,13 +9,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from io_utils.MetricFeeder import MetricFeeder
+from io_utils.GFeeder import GFeeder
 
 # In[9]:
-dataFeeder = MetricFeeder(split_size=10)
-raw_data = pd.read_json("sample_cpu_util.json")
+dataFeeder = GFeeder(split_size=5)
+raw_data = dataFeeder.read()
 n_row = raw_data.shape[0]
-workload = dataFeeder.average_metric(raw_data["Volume"])
+workload = raw_data[dataFeeder.CPU_UTIL]
 
 
 # In[10]:

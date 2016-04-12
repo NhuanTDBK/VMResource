@@ -14,3 +14,5 @@ class OptimizerNNEstimator(BaseEstimator):
         return self.model_fn.predict(X)
     def score(self,X,y):
         return self.model_fn.score(X,y)
+    def save(self,fname):
+        return self.model_fn.save(fname)

@@ -4,11 +4,12 @@ from io_utils.GFeeder import GFeeder
 from utils.initializer import *
 
 param_dicts = {
-    "cross_rate":[0.6,0.65,0.7,0.8,0.9],
-    "pop_size":[45,50,60],
-    "mutation_rate":np.arange(0.01,0.05,step=0.01)
+    "cross_rate":[0.6,0.65,0.7],
+    "pop_size":[45,60],
+    "mutation_rate":np.arange(0.01,0.05,step=0.01),
+    'gen_size':np.arange(100,2000,step=20)
 }
-n_windows = 4
+n_windows = 2
 n_hidden = 10
 # metric_types = ["cpu_util","disk_write_rate","disk_read_rate","network_"]
 dataFeeder = GFeeder()
