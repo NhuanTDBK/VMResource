@@ -24,32 +24,32 @@ X_train,y_train,X_test,y_test = dataFeeder.split_train_and_test(metrics=metrics_
 # Number of hiddens node (one hidden layer)
 
 score_list = {}
-for n_hidden in np.arange(30,200,step=10):
-    # n_hidden = 80
-    # Define neural shape
-        # Input layer: [n_sample*n_size]
-        # Hidden layer:
-        # Output layer: regression
-    neural_shape = [dataFeeder.input_size,n_hidden,dataFeeder.output_size]
-    # Initialize GA Estimator
-    # estimator = GAEstimator(cross_rate=0.7,mutation_rate=0.04,pop_size=60,gen_size=100)
 
-    fit_param = {'neural_shape':neural_shape}
+n_hidden = 120
+# Define neural shape
+    # Input layer: [n_sample*n_size]
+    # Hidden layer:
+    # Output layer: regression
+neural_shape = [dataFeeder.input_size,n_hidden,dataFeeder.output_size]
+# Initialize GA Estimator
+# estimator = GAEstimator(cross_rate=0.7,mutation_rate=0.04,pop_size=60,gen_size=100)
 
-    # Initialize neural network model for regression
-    neuralNet = NeuralFlowRegressor()
+fit_param = {'neural_shape':neural_shape}
 
-    # There are many techniques for combining GA with NN. One of this, the optimizer solution of GA will be weights initialized of NN
-    # optimizer = OptimizerNNEstimator(estimator,neuralNet)
-    optimizer = neuralNet
-    optimizer.fit(X_train,y_train,**fit_param)
-    score = optimizer.score(X_test,y_test)
-    print score
-    score_list[n_hidden]=score
+# Initialize neural network model for regression
+neuralNet = NeuralFlowRegressor()
+
+# There are many techniques for combining GA with NN. One of this, the optimizer solution of GA will be weights initialized of NN
+# optimizer = OptimizerNNEstimator(estimator,neuralNet)
+optimizer = neuralNet
+optimizer.fit(X_train,y_train,**fit_param)
+score = optimizer.score(X_test,y_test)
+print score
+score_list[n_hidden]=score
 # if score < 0.01:
-# y_pred = optimizer.predict(X_test)
+y_pred = optimizer.predict(X_test)
 # plot_metric_figure(y_pred=y_pred,y_test=y_test, metric_type=dataFeeder.metrics,title="GANN")
-# plot_metric_figure(y_pred=y_pred,y_test=y_test,metric_type=metrics_types,title=" GANN ")
-# optimizer.save("params/model_full_metric_%s"%score)
+plot_metric_figure(y_pred=y_pred,y_test=y_test,metric_type=metrics_types,title=" GANN ")
+optimizer.save("params/model_full_metric"%score)
 score_list = pd.Series(score_list)
 print "Optimal hidden nodes: %s, with score = %s"%(score_list.argmin(),score_list.min())
