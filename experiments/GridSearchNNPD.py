@@ -24,7 +24,7 @@ X_train,y_train,X_test,y_test = dataFeeder.split_train_and_test(metrics=metrics_
 # Number of hiddens node (one hidden layer)
 
 score_list = {}
-for n_hidden in np.arange(2000,4000,step=10):
+for n_hidden in np.arange(240,300,step=1):
     # n_hidden = 80
     # Define neural shape
         # Input layer: [n_sample*n_size]
