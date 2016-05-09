@@ -12,10 +12,11 @@ import pandas as pd
 from io_utils.GFeeder import GFeeder
 
 # In[9]:
-dataFeeder = GFeeder(split_size=5)
-raw_data = dataFeeder.read()
-n_row = raw_data.shape[0]
-workload = raw_data[dataFeeder.CPU_UTIL]
+# dataFeeder = GFeeder(split_size=5)
+# raw_data = dataFeeder.read()
+# n_row = raw_data.shape[0]
+# workload = raw_data[dataFeeder.CPU_UTIL]
+workload = pd.read_json('../data/gdata/metric_778700158_1min.json',orient='records')["cpu"]
 
 
 # In[10]:

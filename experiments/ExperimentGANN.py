@@ -25,7 +25,7 @@ X_train,y_train,X_test,y_test = dataFeeder.split_train_and_test(metrics=metrics_
 
 score_list = {}
 
-n_hidden = 120
+n_hidden = 200
 # Define neural shape
     # Input layer: [n_sample*n_size]
     # Hidden layer:

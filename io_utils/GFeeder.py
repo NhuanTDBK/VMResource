@@ -2,7 +2,7 @@ from utils.SlidingWindowUtil import SlidingWindow
 from __init__ import *
 import os
 class GFeeder:
-    def __init__(self,skip_lists=1,split_size=None,file_name="data/gdata/gcluster_normalize_space.json"):
+    def __init__(self,skip_lists=1,split_size=None,normalize_space =False, file_name="data/gdata/gcluster_normalize_space.json"):
         self.skip_lists = skip_lists
         if(split_size!=None):
             self.split_size = split_size
@@ -11,12 +11,15 @@ class GFeeder:
         self.DISK_IO_TIME = 'disk_io_time'
         self.DISK_SPACE = 'disk_space'
         self.MEM_USAGE = 'mem_usage'
+        if(normalize_space==True):
+            self.file_name = "data/gdata/gcluster_1268205_1min.json"
+        else:
+            self.file_name = file_name
         self.metric_type = [
             self.CPU_UTIL, self.MEM_USAGE, self.DISK_IO_TIME,self.DISK_SPACE
         ]
         self.metrics = self.metric_type
         current_folder_path, current_folder_name = os.path.split(os.getcwd())
-        self.file_name=file_name
         if(current_folder_name!='VMResourcePrediction'):
             self.file_name = '../%s'%file_name
     def read(self,metrics=None):
