@@ -13,7 +13,7 @@ class NeuralFlowRegressor(BaseEstimator):
         return {
             "uniform_init": self.uniform_init,
             "learning_rate": self.learning_rate,
-            "activation": self.activation,
+            "activation": self.activation_name,
             "optimize": self.optimize,
             "steps": self.steps,
             "batch_size": self.batch_size,
@@ -26,10 +26,11 @@ class NeuralFlowRegressor(BaseEstimator):
             self.__setattr__(param, value)
         return self
 
-    def __init__(self, uniform_init=True, learning_rate=1E-01, activation=None, optimize="Adam", steps=1000,
+    def __init__(self, uniform_init=True, learning_rate=1E-01, activation="ReLu", optimize="Adam", steps=1000,
                  batch_size=100, weights_matrix=None, model_fn=None,verbose=0,cross_validation=False,hidden_nodes=None):
         print "Initialization"
-        if (activation == None):
+	self.activation_name = activation
+        if (activation == "ReLU"):
             self.activation = tf.nn.relu
         elif (activation == "sigmoid"):
             self.activation = tf.nn.sigmoid
@@ -100,11 +101,11 @@ class NeuralFlowRegressor(BaseEstimator):
         # Initialize neural network layers
         self.X = tf.placeholder("float", [None, self.neural_shape[0]], name="input")
         self.y = tf.placeholder("float", [None, self.neural_shape[-1]], name="output")
-        self.config_addon = skflow.addons.ConfigAddon(num_cores=4, gpu_memory_fraction=0.6)
+        #self.config_addon = skflow.addons.ConfigAddon(num_cores=4, gpu_memory_fraction=0.6)
         self.network = skflow.TensorFlowEstimator(model_fn=self.model_fn, n_classes=0,
                                                   steps=self.steps, learning_rate=self.learning_rate,
                                                   batch_size=self.batch_size,
-                                                  optimizer=self.optimize, config_addon=self.config_addon, verbose=self.verbose,continue_training=True)
+                                                  optimizer=self.optimize,verbose=self.verbose,continue_training=True)
         if(self.cross_validation):
             for train,test in self.kFold:
                 self.network.fit(X[train],y[train])
