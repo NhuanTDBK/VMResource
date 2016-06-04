@@ -9,24 +9,16 @@ class FuzzyProcessor:
         self.alpha = alpha
         self.automf = automf
     def fuzzy(self,training_set):
-        length_x_train = len(training_set)
-        difference = np.zeros(length_x_train - 1)
-        for i in range(0, length_x_train - 1):
-            difference[i] = training_set[i + 1] - training_set[i] + self.alpha
-        max_val = difference.max()
-        min_val = difference.min()
-        if(self.automf==True):
-            self.fuzzy_set_size = int(math.ceil(max_val/self.fuzzy_distance)+1)
-        fuzzy_result = np.zeros([length_x_train - 1, self.fuzzy_set_size])
+        fuzzy_result = np.zeros([self.length_x_train - 1, self.fuzzy_set_size])
         self.fuzzy_set = np.zeros(self.fuzzy_set_size)
         for i in range(0, self.fuzzy_set_size):
             self.fuzzy_set[i] = self.fuzzy_distance * i + self.fuzzy_distance / 2
-        for i in range(1, length_x_train - 2):
+        for i in range(1, self.length_x_train - 2):
             # try:
-            j = int(difference[i] / self.fuzzy_distance)
+            j = int(self.difference[i] / self.fuzzy_distance)
             fuzzy_result[i][j] = 1
-            fuzzy_result[i][j - 1] = (self.fuzzy_set[j + 1] + self.fuzzy_set[j] - 2 * difference[i]) / (2 * self.fuzzy_distance)
-            fuzzy_result[i][j + 1] = (- self.fuzzy_set[j - 1] - self.fuzzy_set[j] + 2 * difference[i]) / (2 * self.fuzzy_distance)
+            fuzzy_result[i][j - 1] = (self.fuzzy_set[j + 1] + self.fuzzy_set[j] - 2 * self.difference[i]) / (2 * self.fuzzy_distance)
+            fuzzy_result[i][j + 1] = (- self.fuzzy_set[j - 1] - self.fuzzy_set[j] + 2 * self.difference[i]) / (2 * self.fuzzy_distance)
             # except Exception as e:
             #     print i,j
             #     print e
@@ -43,5 +35,15 @@ class FuzzyProcessor:
             difference = tu / mau - self.alpha
             y_pred[i] = testing_set[i] + difference
         return y_pred
+    def fit(self,dataset):
+        self.length_x_train = len(dataset)
+        self.difference = np.zeros(self.length_x_train - 1)
+        for i in range(0, self.length_x_train - 1):
+            self.difference[i] = dataset[i + 1] - dataset[i] + self.alpha
+        self.max_val = self.difference.max()
+        self.min_val = self.difference.min()
+        if(self.automf==True):
+            self.fuzzy_set_size = int(math.ceil(self.max_val/self.fuzzy_distance)+1)
     def fit_transform(self,dataset):
+        self.fit(dataset)
         return self.fuzzy(dataset)

@@ -34,16 +34,18 @@ scaler = MinMaxScaler()
 data = scaler.fit_transform(pd.read_csv('data/gdata/sampling_617685_metric_1min_datetime.csv',index_col=0)['cpu_rate'])
 print "Normalize complete"
 fuzzy_transform = FuzzyProcessor(automf=True)
-training_set_size = 29231
-testing_set_size = 12527
+# training_set_size = 29231
+# testing_set_size = 12527
 
 n_sliding_window = 2
 # <codecell>
 fuzzy_train = np.load('fuzzy_train.npz')['fuzzy_train']
+training_set_size = int(fuzzy_train.shape[0]*0.7)
+testing_set_size = int(fuzzy_train.shape[0]*0.3)
 # fuzzy_train = fuzzy_transform.fit_transform(data.cpu_rate)
 
 # # <codecell>
-# n_sliding_window = 2
+n_sliding_window = 2
 print "Preparing sliding window dataset..."
 X_dat = np.array(list(SlidingWindow(fuzzy_train,n_sliding_window,concatenate=True)))
 X_train = X_dat[:training_set_size]
