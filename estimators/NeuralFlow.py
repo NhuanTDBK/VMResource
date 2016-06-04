@@ -27,7 +27,7 @@ class NeuralFlowRegressor(BaseEstimator):
         return self
 
     def __init__(self, uniform_init=True, learning_rate=1E-01, activation=None, optimize="Adam", steps=1000,
-                 batch_size=100, weights_matrix=None, model_fn=None,verbose=0):
+                 batch_size=100, weights_matrix=None, model_fn=None,verbose=0,cross_validation=False,hidden_nodes=None):
         print "Initialization"
         if (activation == None):
             self.activation = tf.nn.relu
@@ -47,6 +47,8 @@ class NeuralFlowRegressor(BaseEstimator):
         self.weights_matrix = None
         self.network = None
         self.verbose = verbose
+        self.cross_validation = cross_validation
+        self.hidden_nodes = hidden_nodes
     def model_regression(self, X, y):
         input_flow = X
         for hidden_node in self.n_hidden:
@@ -65,14 +67,21 @@ class NeuralFlowRegressor(BaseEstimator):
         return self.network.predict(X)
 
     def fit(self, X, y, **param):
-        self.neural_shape = param.get("neural_shape")
+        self.neural_shape = []
+        if(param.has_key('neural_shape')):
+            self.neural_shape = param.get("neural_shape")
+            self.n_output = self.neural_shape[-1]
+            self.n_hidden = self.neural_shape[1:-1]
+            self.number_of_layers = len(self.neural_shape)
+        else:
+            self.n_input = len(X[0])
+            self.n_output = len(y[0])
+            self.neural_shape = self.hidden_nodes.tolist()
+            self.neural_shape.insert(0,self.n_input)
+            self.neural_shape.append(self.n_output)
+            self.n_hidden = self.hidden_nodes
+        self.kFold = KFold(X.shape[0], n_folds=5)
         self.weights_matrix = param.get('weights_matrix')
-        self.kFold = KFold(X.shape[0],n_folds=5)
-        self.n_output = self.neural_shape[-1]
-
-        self.n_hidden = self.neural_shape[1:-1]
-
-        self.number_of_layers = len(self.neural_shape)
         self.weight_layers = [(self.neural_shape[t - 1], self.neural_shape[t]) for t in
                               range(1, len(self.neural_shape))]
         self.bias_layers = [self.neural_shape[t] for t in range(1, len(self.neural_shape))]
@@ -96,8 +105,11 @@ class NeuralFlowRegressor(BaseEstimator):
                                                   steps=self.steps, learning_rate=self.learning_rate,
                                                   batch_size=self.batch_size,
                                                   optimizer=self.optimize, config_addon=self.config_addon, verbose=self.verbose,continue_training=True)
-        for train,test in self.kFold:
-            self.network.fit(X[train],y[train])
+        if(self.cross_validation):
+            for train,test in self.kFold:
+                self.network.fit(X[train],y[train])
+        else:
+            self.network.fit(X,y)
         return self
 
     def weight_init(self, shape, dtype):

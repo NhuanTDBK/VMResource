@@ -5,8 +5,12 @@ class OptimizerNNEstimator(BaseEstimator):
         self.optimizer = optimizer
         self.model_fn = model_fn
     def fit(self,X,y,**fit_params):
-        self.neuron_shape = fit_params.get("neural_shape")
-        self.optimizer.fit(X,y,**fit_params)
+
+        if(isinstance(fit_params,dict)&fit_params.has_key('neural_shape')):
+            self.neuron_shape = fit_params.get("neural_shape")
+            self.optimizer.fit(X,y,**fit_params)
+        else:
+            self.optimizer.fit(X,y)
         fit_params["weights_matrix"] = self.optimizer.best_archive
         self.model_fn.fit(X,y,**fit_params)
         return self
