@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from estimators.BruteForceGridSearch import BruteForceGridSearch
+from estimators.BruteForceGridSearchACO import BruteForceGridSearch
 from sklearn.preprocessing import MinMaxScaler
 
 print "Loading data"
