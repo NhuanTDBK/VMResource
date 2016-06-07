@@ -12,7 +12,7 @@ from sklearn.metrics import mean_squared_error
 class BruteForceGridSearch():
     def __init__(self,n_sliding_ranges):
         self.n_sliding_ranges = n_sliding_ranges
-        self.fuzzy_transform = FuzzyProcessor(automf=True)
+        self.fuzzy_transform = FuzzyProcessor(automf=True,fuzzy_distance=0.01)
     def transform(self,data_source):
         self.data_source = data_source
         self.data_transform = self.fuzzy_transform.fit_transform(data_source)
@@ -69,5 +69,5 @@ class BruteForceGridSearch():
             result.append(tmp)
 	    np.savez('model_saved/%s'%score_nn,y_pred=y_pred,y_test=y_test[1:])
 	    optimizer.save('model_saved/%s_model'%score_nn)
-        pd.DataFrame(result).to_csv('score_grid_exhaust.csv',index=None)
+        pd.DataFrame(result).to_csv('score_grid_exhaust_ga.csv',index=None)
 
