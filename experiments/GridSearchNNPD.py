@@ -20,13 +20,13 @@ metrics_types = [dataFeeder.CPU_UTIL]
 #     dataFeeder.DISK_SPACE,
 #
 # }
-dat = pd.read_csv('../sample_610_10min.csv',index_col=0,parse_dates=True)
+dat = pd.read_csv('sample_610_10min.csv',index_col=0,parse_dates=True)
 print "Getting data"
 X_train,y_train,X_test,y_test = dataFeeder.split_train_and_test(data=dat,metrics=['cpu_rate'],n_sliding_window=n_sliding_window)
 # Number of hiddens node (one hidden layer)
 
 score_list = {}
-for n_hidden in np.arange(240,300,step=1):
+for n_hidden in np.arange(10,30,step=1):
     # n_hidden = 80
     # Define neural shape
         # Input layer: [n_sample*n_size]
@@ -39,7 +39,7 @@ for n_hidden in np.arange(240,300,step=1):
     fit_param = {'neural_shape':neural_shape}
 
     # Initialize neural network model for regression
-    neuralNet = NeuralFlowRegressor()
+    neuralNet = NeuralFlowRegressor(learning_rate=1E-03,optimize='SGD',activation='sigmoid')
 
     # There are many techniques for combining GA with NN. One of this, the optimizer solution of GA will be weights initialized of NN
     # optimizer = OptimizerNNEstimator(estimator,neuralNet)
