@@ -70,9 +70,12 @@ class GFeeder:
         return X_test, y_test
         # return data_fetch_X,data_fetch_y
     def split_train_and_test(self,data=None,metrics=None,n_sliding_window=4,train_size = 0.7):
-        self.result = data
-        if(data==None):
+        allowed_classes = (pd.Series, pd.DataFrame)
+        if(data.empty):
             self.result = self.read(metrics)
+        if isinstance(data, allowed_classes):
+            self.result = data[metrics]
+            self.CPU_UTIL = 'cpu_rate'
         length_data = self.result.shape[0]
         point = int(length_data*train_size)
         range_train = (-1,point)

@@ -1,26 +1,28 @@
 # Experiment GABPNN
+import pandas as pd
+import numpy as np
 from estimators.GAEstimator import GAEstimator
 from estimators.NeuralFlow import NeuralFlowRegressor
 from estimators.OptimizerNNEstimator import OptimizerNNEstimator
 from io_utils.GFeeder import GFeeder
-from utils.GraphUtil import *
-from utils.initializer import *
+# from utils.GraphUtil import *
+# from utils.initializer import *
 
 # length of sliding windows for input
 n_sliding_window = 2
 
 #Getting Google cluster data
-dataFeeder = GFeeder(skip_lists=3)
-metrics_types = [dataFeeder.CPU_UTIL,dataFeeder.DISK_IO_TIME,dataFeeder.DISK_SPACE,dataFeeder.MEM_USAGE]
+dataFeeder = GFeeder(skip_lists=1)
+metrics_types = [dataFeeder.CPU_UTIL]
 # metrics_windows = {
 #     dataFeeder.CPU_UTIL : 3,
 #     dataFeeder.DISK_IO_TIME,
 #     dataFeeder.DISK_SPACE,
 #
 # }
-
+dat = pd.read_csv('../sample_610_10min.csv',index_col=0,parse_dates=True)
 print "Getting data"
-X_train,y_train,X_test,y_test = dataFeeder.split_train_and_test(metrics=metrics_types,n_sliding_window=n_sliding_window)
+X_train,y_train,X_test,y_test = dataFeeder.split_train_and_test(data=dat,metrics=['cpu_rate'],n_sliding_window=n_sliding_window)
 # Number of hiddens node (one hidden layer)
 
 score_list = {}
@@ -49,8 +51,5 @@ for n_hidden in np.arange(240,300,step=1):
     optimizer.save("params/model_full_metric_%s"%score)
 # if score < 0.01:
 # y_pred = optimizer.predict(X_test)
-# plot_metric_figure(y_pred=y_pred,y_test=y_test, metric_type=dataFeeder.metrics,title="GANN")
-# plot_metric_figure(y_pred=y_pred,y_test=y_test,metric_type=metrics_types,title=" GANN ")
-#optimizer.save("params/model_full_metric_%s"%score)
 score_list = pd.Series(score_list)
 print "Optimal hidden nodes: %s, with score = %s"%(score_list.argmin(),score_list.min())
