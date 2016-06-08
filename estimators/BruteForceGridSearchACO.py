@@ -12,7 +12,7 @@ from sklearn.metrics import mean_squared_error
 class BruteForceGridSearch():
     def __init__(self,n_sliding_ranges):
         self.n_sliding_ranges = n_sliding_ranges
-        self.fuzzy_transform = FuzzyProcessor(automf=True)
+        self.fuzzy_transform = FuzzyProcessor(automf=True,fuzzy_distance=0.001)
     def transform(self,data_source):
         self.data_source = data_source
         self.data_transform = self.fuzzy_transform.fit_transform(data_source)
@@ -38,22 +38,24 @@ class BruteForceGridSearch():
             trainObject = TrainObject(X_train=X_train,y_train=y_train,X_test=X_test,y_test=y_test,metadata=metadata)
             self.train_bucket.append(trainObject)
     def fit(self,data=None):
-        n_hidden= np.array([55])
-        param_aco = {
-            'Q':[0.65,0.7,0.75],
-            'epsilon':[0.1,0.2,0.3,0.4,0.5],
-	    'hidden_nodes':[n_hidden]
-        }
-        estimator = ACOEstimator(Q=0.65, epsilon=0.1, number_of_solutions=130)
-        neuralNet = NeuralFlowRegressor(learning_rate=1E-03, hidden_nodes=n_hidden)
+        # n_hidden= np.array([55])
         result = []
         for train_item in self.train_bucket:
-            X_train,y_train,X_test,y_test = train_item.getitems()
+            X_train, y_train, X_test, y_test = train_item.getitems()
+            n_hidden = np.array([X_train.shape[1]+y_train.shape[1]])
+            param_aco = {
+                'Q': [0.65, 0.7, 0.75],
+                'epsilon': [0.1, 0.2, 0.3, 0.4, 0.5],
+                'hidden_nodes': [n_hidden]
+            }
+            estimator = ACOEstimator(Q=0.65, epsilon=0.1, number_of_solutions=130)
+            neuralNet = NeuralFlowRegressor(learning_rate=1E-03, hidden_nodes=n_hidden)
+
             gridSearch = GridSearchCV(estimator,param_aco,n_jobs=-1)
             gridSearch.fit(X_train,y_train)
             optimizer = OptimizerNNEstimator(gridSearch.best_estimator_, neuralNet)
             neuralNet.fit(X_train,y_train)
-	    X_test_f = self.data_source[self.train_len+1:self.train_len+self.test_len+1]
+            X_test_f = self.data_source[self.train_len+1:self.train_len+self.test_len+1]
             y_pred_f = optimizer.predict(X_test)
             y_pred = self.fuzzy_transform.defuzzy(X_test_f,y_pred_f)
             score_nn = np.sqrt(mean_squared_error(y_test[1:], y_pred))
