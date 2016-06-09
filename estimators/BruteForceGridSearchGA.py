@@ -12,7 +12,7 @@ from sklearn.metrics import mean_squared_error
 class BruteForceGridSearch():
     def __init__(self,n_sliding_ranges):
         self.n_sliding_ranges = n_sliding_ranges
-        self.fuzzy_transform = FuzzyProcessor(automf=True,fuzzy_distance=0.001)
+        self.fuzzy_transform = FuzzyProcessor(automf=True,fuzzy_distance=0.02)
     def transform(self,data_source):
         self.data_source = data_source
         self.data_transform = self.fuzzy_transform.fit_transform(data_source)
@@ -42,7 +42,7 @@ class BruteForceGridSearch():
         result = []
         for train_item in self.train_bucket:
             X_train, y_train, X_test, y_test = train_item.getitems()
-            n_hidden = np.array([X_train.shape[1]+y_train.shape[1]])
+            n_hidden = np.array([55])
             param_dict = {
                 "cross_rate": [0.65, 0.7],
                 "pop_size": [45,50,60],
@@ -50,10 +50,10 @@ class BruteForceGridSearch():
             }
             estimator = GAEstimator(cross_rate=0.7, mutation_rate=0.04, pop_size=60, gen_size=100)
             neuralNet = NeuralFlowRegressor(learning_rate=1E-03, hidden_nodes=n_hidden)
-
             neural_shape = [X_train.shape[1], n_hidden[0],y_train.shape[1]]
             fit_param = {'neural_shape': neural_shape}
-            gridSearch = GridSearchCV(estimator,param_dict,n_jobs=-1,fit_params=fit_param,scoring='mean_squared_error')
+            print "Preparing for grid search"
+            gridSearch = GridSearchCV(estimator,param_dict,n_jobs=-1,fit_params=fit_param,scoring='mean_squared_error',verbose=1)
             gridSearch.fit(X_train,y_train)
             optimizer = OptimizerNNEstimator(gridSearch.best_estimator_, neuralNet)
             neuralNet.fit(X_train,y_train)

@@ -42,7 +42,7 @@ class BruteForceGridSearch():
         result = []
         for train_item in self.train_bucket:
             X_train, y_train, X_test, y_test = train_item.getitems()
-            n_hidden = np.array([X_train.shape[1]+y_train.shape[1]])
+            n_hidden = np.array([55])
             param_aco = {
                 'Q': [0.65, 0.7, 0.75],
                 'epsilon': [0.1, 0.2, 0.3, 0.4, 0.5],
