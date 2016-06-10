@@ -85,9 +85,9 @@ class FeedFlow:
         return self.flow(X)
 
     def score(self, X=None, y=None):
-        if (y == None):
+        if y.size==0:
             y = self.y
-        if (X == None):
+        if X.size == 0:
             X = self.X
         return np.sqrt(mean_squared_error(y, self.flow(X)))
 

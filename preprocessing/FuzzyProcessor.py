@@ -27,11 +27,11 @@ class FuzzyProcessor:
         length_y_test = len(testing_set)
         y_pred = np.zeros([length_y_test - 1])
         for i in range (0, length_y_test - 1):
-	    print "Loop %s"%i
+	    # print "Loop %s"%i
             tu = 0.0
             mau = 0.0
             for j in range (0, self.fuzzy_set_size):
-		print "Loop fuzzy set %s"%j
+		# print "Loop fuzzy set %s"%j
                 tu = tu + self.fuzzy_set[j] *  training_result[i][j]
                 mau = mau + training_result[i][j]
             difference = tu / mau - self.alpha

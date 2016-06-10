@@ -8,7 +8,7 @@ from estimators.FuzzyStep import *
 from utils.SlidingWindowUtil import SlidingWindow
 
 print 'FACO Model'
-data = pd.read_csv('../cpu_usage.csv')
+data = pd.read_csv('../sample_610_10min.csv')
 
 # define training_set and testing _set
 training_set_size = 2000
@@ -22,22 +22,22 @@ n_sliding_window = 1
 #define training_set, testing set
 X_train = np.zeros(training_set_size)
 for i in range (0,training_set_size):
-    X_train[i] = data.cpu_usage[i]
+    X_train[i] = data.cpu_rate[i]
 
 y_train = np.zeros(training_set_size)
 for i in range (0,training_set_size):
-    y_train[i] = data.cpu_usage[i + 1]
+    y_train[i] = data.cpu_rate[i + 1]
 
 X_test = np.zeros(testing_set_size)
 for i in range (0,testing_set_size):
-    X_test[i] = data.cpu_usage[i + training_set_size]
+    X_test[i] = data.cpu_rate[i + training_set_size]
 
 y_test = np.zeros(testing_set_size - 1)
 for i in range (0,testing_set_size - 1):
-    y_test[i] = data.cpu_usage[i + training_set_size + 1]
+    y_test[i] = data.cpu_rate[i + training_set_size + 1]
 
 # Number of hiddens node (one hidden layer)
-n_hidden = np.array([52])
+n_hidden = np.array([55])
 # Define neural shape
     # Input layer: [n_sample*n_size]
     # Hidden layer:
@@ -58,7 +58,7 @@ y_train_f = fuzzy(y_train)
 X_test_f = fuzzy(X_test)
 
 # # # Initialize neural network model for regression
-neuralNet = NeuralFlowRegressor(hidden_nodes=n_hidden)
+neuralNet = NeuralFlowRegressor(learning_rate=1E-04,hidden_nodes=n_hidden)
 # # There are many techniques for combining GA with NN. One of this, the optimizer solution of GA will be weights initialized of NN
 optimizer = OptimizerNNEstimator(estimator,neuralNet)
 # # optimizer = neuralNet
